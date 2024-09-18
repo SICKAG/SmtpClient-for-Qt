@@ -19,10 +19,11 @@
 #ifndef MIMEPART_H
 #define MIMEPART_H
 
-#include <QObject>
+#include <QtCore/QObject>
+#include "smtpmime_global.h"
 #include "mimecontentformatter.h"
 
-class MimePart : public QObject
+class SMTP_MIME_EXPORT MimePart : public QObject
 {
     Q_OBJECT
 public:

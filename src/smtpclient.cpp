@@ -18,8 +18,9 @@
 
 #include "smtpclient.h"
 
-#include <QFileInfo>
-#include <QByteArray>
+#include <QtCore/QFileInfo>
+#include <QtCore/QByteArray>
+#include <QtNetwork/QTcpSocket>
 
 
 /* [1] Constructors and destructors */
@@ -84,9 +85,11 @@ void SmtpClient::setConnectionType(ConnectionType ct)
     case TcpConnection:
         socket = new QTcpSocket(this);
         break;
+#ifndef QT_NO_OPENSSL
     case SslConnection:
     case TlsConnection:
         socket = new QSslSocket(this);
+#endif
     }
 }
 
@@ -173,14 +176,17 @@ bool SmtpClient::connectToHost()
 {
     switch (connectionType)
     {
+#ifndef QT_NO_OPENSSL
     case TlsConnection:
+#endif
     case TcpConnection:
         socket->connectToHost(host, port);
         break;
+#ifndef QT_NO_OPENSSL
     case SslConnection:
         ((QSslSocket*) socket)->connectToHostEncrypted(host, port);
         break;
-
+#endif
     }
 
     // Tries to connect to server
@@ -215,7 +221,7 @@ bool SmtpClient::connectToHost()
             emit smtpError(ServerError);
             return false;
         }
-
+#ifndef QT_NO_OPENSSL
         if (connectionType == TlsConnection) {
             // send a request to start TLS handshake
             sendMessage("STARTTLS");
@@ -249,6 +255,7 @@ bool SmtpClient::connectToHost()
                 return false;
             }
         }
+#endif
     }
     catch (ResponseTimeoutException)
     {
@@ -312,7 +319,7 @@ bool SmtpClient::login(const QString &user, const QString &password, AuthMethod 
             }
         }
     }
-    catch (ResponseTimeoutException e)
+    catch (ResponseTimeoutException)
     {
         // Responce Timeout exceeded
         emit smtpError(AuthenticationFailedError);

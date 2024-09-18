@@ -19,11 +19,16 @@
 #ifndef MIMEATTACHMENT_H
 #define MIMEATTACHMENT_H
 
-#include <QFile>
+#pragma push_macro("new")
+#undef new
+#include <QtCore/QFile>
+#pragma pop_macro("new")
+
+#include "smtpmime_global.h"
 #include "mimepart.h"
 #include "mimefile.h"
 
-class MimeAttachment : public MimeFile
+class SMTP_MIME_EXPORT MimeAttachment : public MimeFile
 {
     Q_OBJECT
 public:

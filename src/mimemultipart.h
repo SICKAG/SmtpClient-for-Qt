@@ -19,9 +19,10 @@
 #ifndef MIMEMULTIPART_H
 #define MIMEMULTIPART_H
 
+#include "smtpmime_global.h"
 #include "mimepart.h"
 
-class MimeMultiPart : public MimePart
+class SMTP_MIME_EXPORT MimeMultiPart : public MimePart
 {
     Q_OBJECT
 public:

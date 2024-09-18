@@ -19,10 +19,11 @@
 #ifndef QUOTEDPRINTABLE_H
 #define QUOTEDPRINTABLE_H
 
-#include <QObject>
-#include <QByteArray>
+#include "smtpmime_global.h"
+#include <QtCore/QObject>
+#include <QtCore/QByteArray>
 
-class QuotedPrintable : public QObject
+class SMTP_MIME_EXPORT QuotedPrintable : public QObject
 {
     Q_OBJECT
 public:

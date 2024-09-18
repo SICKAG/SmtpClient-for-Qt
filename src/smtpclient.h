@@ -19,13 +19,19 @@
 #ifndef SMTPCLIENT_H
 #define SMTPCLIENT_H
 
-#include <QObject>
+#pragma push_macro("new")
+#undef new
+#include <QtCore/QObject>
 #include <QtNetwork/QSslSocket>
+#include <QtNetwork/QAbstractSocket>
+#pragma pop_macro("new")
 
+#include "smtpmime_global.h"
 #include "mimemessage.h"
 
+class QTcpSocket;
 
-class SmtpClient : public QObject
+class SMTP_MIME_EXPORT SmtpClient : public QObject
 {
     Q_OBJECT
 public:
@@ -49,9 +55,12 @@ public:
 
     enum ConnectionType
     {
-        TcpConnection,
+        TcpConnection
+#ifndef QT_NO_OPENSSL
+        ,
         SslConnection,
         TlsConnection       // STARTTLS
+#endif
     };
 
     /* [0] --- */

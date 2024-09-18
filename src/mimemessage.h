@@ -19,12 +19,13 @@
 #ifndef MIMEMESSAGE_H
 #define MIMEMESSAGE_H
 
+#include "smtpmime_global.h"
 #include "mimepart.h"
 #include "mimemultipart.h"
 #include "emailaddress.h"
-#include <QList>
+#include <QtCore/QList>
 
-class MimeMessage : public QObject
+class SMTP_MIME_EXPORT MimeMessage : public QObject
 {
 public:
 
@@ -45,6 +46,7 @@ public:
     /* [2] Getters and Setters */
 
     void setSender(EmailAddress* e);
+    void setReplyTo(EmailAddress* e); // Added by S. Schweitzer.
     void addRecipient(EmailAddress* rcpt, RecipientType type = To);
     void addTo(EmailAddress* rcpt);
     void addCc(EmailAddress* rcpt);
@@ -75,6 +77,7 @@ protected:
     /* [4] Protected members */
 
     EmailAddress* sender;
+    EmailAddress* replyTo;
     QList<EmailAddress*> recipientsTo, recipientsCc, recipientsBcc;
     QString subject;
     MimePart *content;

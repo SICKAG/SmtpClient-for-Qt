@@ -18,14 +18,15 @@
 
 #include "mimemessage.h"
 
-#include <QDateTime>
+#include <QtCore/QDateTime>
 #include "quotedprintable.h"
 #include <typeinfo>
 
 /* [1] Constructors and Destructors */
 
 MimeMessage::MimeMessage(bool createAutoMimeContent) :
-    hEncoding(MimePart::_8Bit)
+    hEncoding(MimePart::_8Bit),
+   replyTo(0)
 {
     if (createAutoMimeContent)
         this->content = new MimeMultiPart();
@@ -50,6 +51,11 @@ void MimeMessage::setContent(MimePart *content) {
 void MimeMessage::setSender(EmailAddress* e)
 {
     this->sender = e;
+}
+
+void MimeMessage::setReplyTo(EmailAddress* e)
+{
+    this->replyTo = e;
 }
 
 void MimeMessage::addRecipient(EmailAddress* rcpt, RecipientType type)
@@ -151,10 +157,10 @@ QString MimeMessage::toString()
         switch (hEncoding)
         {
         case MimePart::Base64:
-            mime += " =?utf-8?B?" + QByteArray().append(sender->getName()).toBase64() + "?=";
+            mime += " =?ISO-8859-1?B?" + QByteArray().append(sender->getName()).toBase64() + "?=";
             break;
         case MimePart::QuotedPrintable:
-            mime += " =?utf-8?Q?" + QuotedPrintable::encode(QByteArray().append(sender->getName())).replace(' ', "_").replace(':',"=3A") + "?=";
+            mime += " =?ISO-8859-1?Q?" + QuotedPrintable::encode(QByteArray().append(sender->getName())).replace(' ', "_").replace(':',"=3A") + "?=";
             break;
         default:
             mime += " " + sender->getName();
@@ -163,6 +169,26 @@ QString MimeMessage::toString()
     mime += " <" + sender->getAddress() + ">\r\n";
     /* ---------------------------------- */
 
+    /* ---------- Reply-to (added by S. Schweitzer) ----------- */
+    if (replyTo != 0) {
+       mime += "Reply-To:";
+       if (replyTo->getName() != "")
+       {
+           switch (hEncoding)
+           {
+           case MimePart::Base64:
+               mime += " =?ISO-8859-1?B?" + QByteArray().append(replyTo->getName()).toBase64() + "?=";
+               break;
+           case MimePart::QuotedPrintable:
+               mime += " =?ISO-8859-1?Q?" + QuotedPrintable::encode(QByteArray().append(replyTo->getName())).replace(' ', "_").replace(':',"=3A") + "?=";
+               break;
+           default:
+               mime += " " + replyTo->getName();
+           }
+       }
+       mime += " <" + replyTo->getAddress() + ">\r\n";
+    }
+    /* ---------------------------------- */
 
     /* ------- Recipients / To ---------- */    
     mime += "To:";
@@ -176,10 +202,10 @@ QString MimeMessage::toString()
             switch (hEncoding)
             {
             case MimePart::Base64:
-                mime += " =?utf-8?B?" + QByteArray().append((*it)->getName()).toBase64() + "?=";
+                mime += " =?ISO-8859-1?B?" + QByteArray().append((*it)->getName()).toBase64() + "?=";
                 break;
             case MimePart::QuotedPrintable:
-                mime += " =?utf-8?Q?" + QuotedPrintable::encode(QByteArray().append((*it)->getName())).replace(' ', "_").replace(':',"=3A") + "?=";
+                mime += " =?ISO-8859-1?Q?" + QuotedPrintable::encode(QByteArray().append((*it)->getName())).replace(' ', "_").replace(':',"=3A") + "?=";
                 break;
             default:
                 mime += " " + (*it)->getName();
@@ -203,10 +229,10 @@ QString MimeMessage::toString()
             switch (hEncoding)
             {
             case MimePart::Base64:
-                mime += " =?utf-8?B?" + QByteArray().append((*it)->getName()).toBase64() + "?=";
+                mime += " =?ISO-8859-1?B?" + QByteArray().append((*it)->getName()).toBase64() + "?=";
                 break;
             case MimePart::QuotedPrintable:
-                mime += " =?utf-8?Q?" + QuotedPrintable::encode(QByteArray().append((*it)->getName())).replace(' ', "_").replace(':',"=3A") + "?=";
+                mime += " =?ISO-8859-1?Q?" + QuotedPrintable::encode(QByteArray().append((*it)->getName())).replace(' ', "_").replace(':',"=3A") + "?=";
                 break;
             default:
                 mime += " " + (*it)->getName();
@@ -226,10 +252,10 @@ QString MimeMessage::toString()
     switch (hEncoding)
     {
     case MimePart::Base64:
-        mime += "=?utf-8?B?" + QByteArray().append(subject).toBase64() + "?=";
+        mime += "=?ISO-8859-1?B?" + QByteArray().append(subject).toBase64() + "?=";
         break;
     case MimePart::QuotedPrintable:
-        mime += "=?utf-8?Q?" + QuotedPrintable::encode(QByteArray().append(subject)).replace(' ', "_").replace(':',"=3A") + "?=";
+        mime += "=?ISO-8859-1?Q?" + QuotedPrintable::encode(QByteArray().append(subject.toLatin1())).replace(' ', "_").replace(':',"=3A") + "?=";
         break;
     default:
         mime += subject;
